@@ -1,36 +1,20 @@
 import Header from "./components/Header";
 import Tasks from "./components/Tasks";
 import AddTask from "./components/AddTask";
-import { useState } from "react";
+import { fetchTasks, deleteTask } from "./Api";
+import { useState, useEffect } from "react";
 
 function App() {
   const [showAddTask, setShowAddTask] = useState(false);
-  const [tasks, setTasks] = useState([
-    {
-      id: 1,
-      text: "doctors appointment",
-      day: "Feb 5th at 2:30pm",
-      reminder: true,
-    },
-    {
-      id: 2,
-      text: "Xmas",
-      day: "Dec 25th at 7:10pm",
-      reminder: true,
-    },
-    {
-      id: 3,
-      text: "Mechanic",
-      day: "Mar 11th at 1:30pm",
-      reminder: true,
-    },
-    {
-      id: 4,
-      text: "Code",
-      day: "Feb 10th at 12:30pm",
-      reminder: true,
-    },
-  ]);
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    const getTasks = async () => {
+      const tasksFromDb = await fetchTasks();
+      setTasks(tasksFromDb);
+    };
+    getTasks();
+  }, []);
 
   // show add task
   const showAddTaskForm = () => {
@@ -45,7 +29,8 @@ function App() {
   };
 
   // delete task
-  const deleteTask = (id) => {
+  const deleteTaskFunction = async (id) => {
+    await deleteTask(id);
     setTasks(tasks.filter((task) => task.id !== id));
   };
 
@@ -60,10 +45,18 @@ function App() {
 
   return (
     <div className="container">
-      <Header title={"Task Tracker"} onClick={showAddTaskForm} showAdd={showAddTask} />
+      <Header
+        title={"Task Tracker"}
+        onClick={showAddTaskForm}
+        showAdd={showAddTask}
+      />
       {showAddTask && <AddTask onAdd={addTask} />}
       {tasks.length > 0 ? (
-        <Tasks tasks={tasks} onDelete={deleteTask} onToggle={toggleReminder} />
+        <Tasks
+          tasks={tasks}
+          onDelete={deleteTaskFunction}
+          onToggle={toggleReminder}
+        />
       ) : (
         "No Tasks to Show"
       )}
