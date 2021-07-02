@@ -1,7 +1,13 @@
 import Header from "./components/Header";
 import Tasks from "./components/Tasks";
 import AddTask from "./components/AddTask";
-import { fetchTasks, deleteTask } from "./Api";
+import {
+  fetchTasks,
+  deleteTask,
+  addTask,
+  updateReminder,
+  getSingleTask,
+} from "./Api";
 import { useState, useEffect } from "react";
 
 function App() {
@@ -22,9 +28,10 @@ function App() {
   };
 
   // Add Task
-  const addTask = (task) => {
+  const addTaskTrigger = async (task) => {
     const id = Math.floor(Math.random() * 10000) + 1;
     const taskWithId = { id, ...task };
+    await addTask(taskWithId);
     setTasks([...tasks, taskWithId]);
   };
 
@@ -50,7 +57,7 @@ function App() {
         onClick={showAddTaskForm}
         showAdd={showAddTask}
       />
-      {showAddTask && <AddTask onAdd={addTask} />}
+      {showAddTask && <AddTask onAdd={addTaskTrigger} />}
       {tasks.length > 0 ? (
         <Tasks
           tasks={tasks}
